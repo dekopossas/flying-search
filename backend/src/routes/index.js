@@ -1,5 +1,5 @@
-// const userRoute = require("./user.routes");
+const flightsRoute = require("./flights.routes");
 
-// module.exports = {
-//   userRoute,
-// };
+module.exports = {
+  flightsRoute,
+};

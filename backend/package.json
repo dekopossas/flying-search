@@ -4,12 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "npm run clean && npm run transpile && npm run minify",
+    "clean": "rm -rf dist",
+    "transpile": "sucrase --transforms imports src -d dist",
+    "minify": "terser dist/*.js --compress --mangle --output dist/bundle.min.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
