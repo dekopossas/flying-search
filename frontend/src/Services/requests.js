@@ -7,7 +7,7 @@ export const API = axios.create({
   baseURL: "http://localhost:3001",
 });
 
-export const getRequest = async (url) => {
-  const { data } = await axios.get(url);
+export const getRequest = async (url, params) => {
+  const { data } = await API.get(url, { params });
   return data;
 };

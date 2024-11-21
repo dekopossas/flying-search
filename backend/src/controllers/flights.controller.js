@@ -3,7 +3,8 @@ const flightService = require("../services/flights.service");
 
 const getFlights = async (req, res, next) => {
   try {
-    const flights = await flightService.getFlights(req.body);
+    console.log(req.query);
+    const flights = await flightService.getFlights(req.query);
 
     return res.status(StatusCodes.OK).json(flights);
   } catch (error) {
