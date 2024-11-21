@@ -9,8 +9,6 @@ function buildUrl(baseUrl, params) {
 }
 
 const getFlights = async (infos) => {
-  console.log(infos);
-
   const BASEURL = "https://seats.aero/partnerapi/search?";
 
   const AUTH_KEY = "pro_2mCPKxHTWPw3uWWOLYRv3hBRaJA";
