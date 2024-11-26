@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getRequest } from "../Services/requests";
+import AutoComplete from "../Components/AutoComplete";
 
 export default function Home() {
   const [originAirport, setOriginAirport] = useState("");
@@ -145,17 +146,15 @@ export default function Home() {
       {/* Main Form */}
       <div className="form-container">
         <div className="input-group">
-          <input
-            type="text"
+          <AutoComplete
             placeholder="Aeroportos de Origem"
             value={originAirport}
-            onChange={(e) => setOriginAirport(e.target.value)}
+            onChange={setOriginAirport}
           />
-          <input
-            type="text"
+          <AutoComplete
             placeholder="Aeroportos de Destino"
             value={destinyAirport}
-            onChange={(e) => setDestinyAirport(e.target.value)}
+            onChange={setDestinyAirport}
           />
         </div>
         <div className="input-group">
