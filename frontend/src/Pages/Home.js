@@ -36,14 +36,15 @@ export default function Home() {
       end_date: endDate !== "" ? endDate : null,
       take: 500,
     };
+    console.log(params);
     const result = await getRequest("/flights", params);
     console.log(result);
-    if (result.data.length <= 0) {
+    if (result.length <= 0) {
       setNoSearchFound(true);
     } else {
       setNoSearchFound(false);
     }
-    setFlights(result.data);
+    setFlights(result);
     setShowNoFilled(false);
   };
 
@@ -232,6 +233,7 @@ export default function Home() {
               <th>Premium</th>
               <th>Executiva</th>
               <th>Primeira Classe</th>
+              <th>Preço</th>
             </tr>
           </thead>
           <tbody>
@@ -270,6 +272,7 @@ export default function Home() {
                       : `${flight.FMileageCost} pts`
                     : "-"}
                 </td>
+                <td>{flight.price}</td>
               </tr>
             ))}
           </tbody>

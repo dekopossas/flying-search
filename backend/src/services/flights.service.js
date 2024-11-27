@@ -13,8 +13,6 @@ const getFlights = async (infos) => {
   const BASEURLSKY =
     "https://sky-scanner3.p.rapidapi.com/flights/search-one-way";
 
-  allFilteredFlights = [];
-
   const AUTH_KEY_SEATS = "pro_2mCPKxHTWPw3uWWOLYRv3hBRaJA";
   const AUTH_KEY_SKY = "22575f39e6msh4fdde34f759eb49p1724d1jsn893a17b6ec97";
 
@@ -45,9 +43,8 @@ const getFlights = async (infos) => {
   };
 
   try {
-    const responseSeats = await axios.request(optionsSeats); // REQUISIÇÃO SEATSAERO
-
-    const responseSky = await axios.request(optionsSky); // REQUISIÇÃO SKYSCANNER
+    const responseSeats = await axios.request(optionsSeats); // SEATSAERO request
+    const responseSky = await axios.request(optionsSky);
 
     const seatsWithFlyNumber = await Promise.all(
       responseSeats.data.data.map(async (flightInfo) => {
@@ -61,16 +58,13 @@ const getFlights = async (infos) => {
           },
         };
         const { data } = await axios.request(optionsTrip);
-        // console.log(data);
 
         return {
           flightInfo: flightInfo,
           responseTrip: data,
-        }; // Return the Serp API response
+        };
       })
     );
-
-    // console.log(seatsWithFlyNumber);
 
     const flightNumbersFromSeats = seatsWithFlyNumber.flatMap((trip) =>
       trip.responseTrip.data[0].AvailabilitySegments.map(
@@ -78,25 +72,72 @@ const getFlights = async (infos) => {
       )
     );
 
-    console.log(flightNumbersFromSeats);
+    console.log(responseSky.data);
 
-    // console.log("responseSky", responseSky.data.data);
-
-    const filteredSky = responseSky.data.data.itineraries.filter((item) => {
-      const legs = item.legs || [];
-      return legs.some((leg) => {
-        const marketing = leg.carriers?.marketing || [];
-        return marketing.some((carrier) =>
-          flightNumbersFromSeats.includes(
-            `${carrier.alternateId}${leg.segments?.[0]?.flightNumber}`
-          )
-        );
+    const flightsWithPrices = responseSky.data.data.itineraries
+      .filter((item) => {
+        const legs = item.legs || [];
+        return legs.some((leg) => {
+          const marketingCarriers = leg.carriers?.marketing || [];
+          return leg.segments.some((segment) => {
+            return marketingCarriers.some((carrier) => {
+              return flightNumbersFromSeats.includes(
+                `${carrier.alternateId}${segment.flightNumber}`
+              );
+            });
+          });
+        });
+      })
+      .flatMap((item) => {
+        const price = item.price.formatted;
+        return item.legs.flatMap((leg) => {
+          const marketingCarriers = leg.carriers?.marketing || [];
+          return leg.segments.flatMap((segment) => {
+            return marketingCarriers
+              .filter((carrier) =>
+                flightNumbersFromSeats.includes(
+                  `${carrier.alternateId}${segment.flightNumber}`
+                )
+              )
+              .map((carrier) => ({
+                flightNumber: `${carrier.alternateId}${segment.flightNumber}`,
+                price,
+              }));
+          });
+        });
       });
+
+    // Map prices and flight numbers to each flightInfo
+    const result = seatsWithFlyNumber.map((seat) => {
+      const flightNumbers = seat.responseTrip.data[0].AvailabilitySegments.map(
+        (segment) => segment.FlightNumber
+      );
+      const matchedDetails = flightNumbers.map((flightNumber) => {
+        const matchedFlight = flightsWithPrices.find(
+          (flight) => flight.flightNumber === flightNumber
+        );
+        return {
+          flightNumber,
+          price: matchedFlight ? matchedFlight.price : "N/A",
+        };
+      });
+
+      // Use the first matched details or default values
+      const { flightNumber, price } = matchedDetails.find(
+        (detail) => detail.price !== "N/A"
+      ) || {
+        flightNumber: "Unknown",
+        price: "N/A",
+      };
+
+      return {
+        ...seat.flightInfo,
+        flightNumber,
+        price,
+      };
     });
 
-    // console.log(filteredSecondArray);
-
-    return filteredSky; // Return all Serp API responses
+    return result; // Return flightInfo with associated prices and flight numbers
   } catch (error) {
     throw error;
   }
