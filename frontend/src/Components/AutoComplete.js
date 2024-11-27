@@ -12,21 +12,21 @@ export default function AutoComplete({ placeholder, value, onChange }) {
     }
 
     try {
-      const data = await getAirports(
-        `https://sky-scanner3.p.rapidapi.com/flights/auto-complete?query=${query}`
-      );
-      console.log(data);
-      if (data.data && Array.isArray(data.data)) {
-        const formattedSuggestions = data.data.map((item) => ({
-          id: item.presentation.skyId,
-          title: item.presentation.title,
-          suggestionTitle: item.presentation.suggestionTitle,
-          subtitle: item.presentation.subtitle,
-        }));
-        setSuggestions(formattedSuggestions);
-      } else {
-        setSuggestions([]);
-      }
+      // const data = await getAirports(
+      //   `https://sky-scanner3.p.rapidapi.com/flights/auto-complete?query=${query}`
+      // );
+      // console.log(data);
+      // if (data.data && Array.isArray(data.data)) {
+      //   const formattedSuggestions = data.data.map((item) => ({
+      //     id: item.presentation.skyId,
+      //     title: item.presentation.title,
+      //     suggestionTitle: item.presentation.suggestionTitle,
+      //     subtitle: item.presentation.subtitle,
+      //   }));
+      //   setSuggestions(formattedSuggestions);
+      // } else {
+      //   setSuggestions([]);
+      // }
     } catch (error) {
       console.error("Error fetching airport suggestions:", error);
       setSuggestions([]);
