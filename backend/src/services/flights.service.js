@@ -14,7 +14,7 @@ const getFlights = async (infos) => {
     "https://sky-scanner3.p.rapidapi.com/flights/search-one-way";
 
   const AUTH_KEY_SEATS = "pro_2mCPKxHTWPw3uWWOLYRv3hBRaJA";
-  const AUTH_KEY_SKY = "22575f39e6msh4fdde34f759eb49p1724d1jsn893a17b6ec97";
+  const AUTH_KEY_SKY = "89fe80f980msh00720371c7df746p1b99dfjsn30cfb9fc99e5";
 
   const optionsSeats = {
     method: "GET",
@@ -43,9 +43,14 @@ const getFlights = async (infos) => {
   };
 
   try {
-    const responseSeats = await axios.request(optionsSeats); // SEATSAERO request
-    const responseSky = await axios.request(optionsSky);
+    // Fetch data from SEATS and SKY APIs
+    const [responseSeats, responseSky] = await Promise.all([
+      axios.request(optionsSeats),
+      axios.request(optionsSky),
+    ]);
+    console.log(responseSky.data.data.itineraries);
 
+    // Fetch trip details from SEATS for each flight
     const seatsWithFlyNumber = await Promise.all(
       responseSeats.data.data.map(async (flightInfo) => {
         const optionsTrip = {
@@ -60,52 +65,37 @@ const getFlights = async (infos) => {
         const { data } = await axios.request(optionsTrip);
 
         return {
-          flightInfo: flightInfo,
+          flightInfo,
           responseTrip: data,
         };
       })
     );
 
+    // Extract flight numbers from SEATS data
     const flightNumbersFromSeats = seatsWithFlyNumber.flatMap((trip) =>
       trip.responseTrip.data[0].AvailabilitySegments.map(
         (segment) => segment.FlightNumber
       )
     );
 
-    console.log(responseSky.data);
-
-    const flightsWithPrices = responseSky.data.data.itineraries
-      .filter((item) => {
-        const legs = item.legs || [];
-        return legs.some((leg) => {
+    // Match flights from SKY data with SEATS flight numbers
+    const flightsWithPrices = [];
+    if (responseSky.data?.data?.itineraries?.length) {
+      responseSky.data.data.itineraries.forEach((item) => {
+        const price = item.price.formatted || "N/A";
+        item.legs.forEach((leg) => {
           const marketingCarriers = leg.carriers?.marketing || [];
-          return leg.segments.some((segment) => {
-            return marketingCarriers.some((carrier) => {
-              return flightNumbersFromSeats.includes(
-                `${carrier.alternateId}${segment.flightNumber}`
-              );
+          leg.segments.forEach((segment) => {
+            marketingCarriers.forEach((carrier) => {
+              const flightNumber = `${carrier.alternateId}${segment.flightNumber}`;
+              if (flightNumbersFromSeats.includes(flightNumber)) {
+                flightsWithPrices.push({ flightNumber, price });
+              }
             });
           });
         });
-      })
-      .flatMap((item) => {
-        const price = item.price.formatted;
-        return item.legs.flatMap((leg) => {
-          const marketingCarriers = leg.carriers?.marketing || [];
-          return leg.segments.flatMap((segment) => {
-            return marketingCarriers
-              .filter((carrier) =>
-                flightNumbersFromSeats.includes(
-                  `${carrier.alternateId}${segment.flightNumber}`
-                )
-              )
-              .map((carrier) => ({
-                flightNumber: `${carrier.alternateId}${segment.flightNumber}`,
-                price,
-              }));
-          });
-        });
       });
+    }
 
     // Map prices and flight numbers to each flightInfo
     const result = seatsWithFlyNumber.map((seat) => {
@@ -137,8 +127,9 @@ const getFlights = async (infos) => {
       };
     });
 
-    return result; // Return flightInfo with associated prices and flight numbers
+    return result; // Return final result
   } catch (error) {
+    console.error("Error in getFlights:", error.message, error.response?.data);
     throw error;
   }
 };
