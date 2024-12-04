@@ -38,7 +38,7 @@ export default function Home() {
       destination_airport: destinyAirport !== "" ? destinyAirport : null,
       start_date: startDate !== "" ? startDate : null,
       end_date: endDate !== "" ? endDate : null,
-      take: 500,
+      take: 5, // aqui que limita o numero de passagens por pesquisa
     };
     console.log(params);
     const result = await getRequest("/flights", params);
