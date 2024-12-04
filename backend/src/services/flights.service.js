@@ -14,7 +14,7 @@ const getFlights = async (infos) => {
     "https://sky-scanner3.p.rapidapi.com/flights/search-one-way";
 
   const AUTH_KEY_SEATS = "pro_2mCPKxHTWPw3uWWOLYRv3hBRaJA";
-  const AUTH_KEY_SKY = "22575f39e6msh4fdde34f759eb49p1724d1jsn893a17b6ec97";
+  const AUTH_KEY_SKY = "89fe80f980msh00720371c7df746p1b99dfjsn30cfb9fc99e5";
 
   const optionsSeats = {
     method: "GET",
