@@ -48,7 +48,7 @@ const getFlights = async (infos) => {
       axios.request(optionsSeats),
       axios.request(optionsSky),
     ]);
-    console.log(responseSky.data.data.itineraries);
+    // console.log(responseSky.data.data.itineraries);
 
     // Fetch trip details from SEATS for each flight
     const seatsWithFlyNumber = await Promise.all(
