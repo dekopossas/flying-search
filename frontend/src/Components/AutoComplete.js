@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAirports } from "../Services/requests";
+// import { getAirports } from "../Services/requests";
 
 export default function AutoComplete({ placeholder, value, onChange }) {
   const [suggestions, setSuggestions] = useState([]);
