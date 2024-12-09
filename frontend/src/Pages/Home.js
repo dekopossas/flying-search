@@ -13,6 +13,7 @@ export default function Home() {
   const [noSearchFound, setNoSearchFound] = useState(false);
   const [flights, setFlights] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [numPassengers, setNumPassengers] = useState(1);
 
   const [filters, setFilters] = useState({
     Date: "",
@@ -39,10 +40,13 @@ export default function Home() {
       start_date: startDate !== "" ? startDate : null,
       end_date: endDate !== "" ? endDate : null,
       take: 5, // aqui que limita o numero de passagens por pesquisa
+      op_carriers: "QR",
+      min_seats: numPassengers || 1,
     };
-    console.log(params);
+
+    // console.log(params);
     const result = await getRequest("/flights", params);
-    console.log(result);
+    // console.log(result);
     if (result.length <= 0) {
       setNoSearchFound(true);
     } else {
@@ -106,6 +110,8 @@ export default function Home() {
           : !flight.FAvailable))
     );
   });
+
+  console.log(flights);
 
   return (
     <>
@@ -178,6 +184,28 @@ export default function Home() {
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
+            </div>
+            <div className="input-group">
+              <label>
+                <input
+                  type="radio"
+                  name="passengers"
+                  value={1}
+                  checked={numPassengers === 1}
+                  onChange={() => setNumPassengers(1)}
+                />
+                1 Passageiro
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="passengers"
+                  value={2}
+                  checked={numPassengers === 2}
+                  onChange={() => setNumPassengers(2)}
+                />
+                2 Passageiros
+              </label>
             </div>
             <div className="button-group">
               <button onClick={handleSubmit}>Procurar</button>
