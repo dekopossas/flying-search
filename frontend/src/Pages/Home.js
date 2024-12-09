@@ -46,6 +46,7 @@ export default function Home() {
 
     // console.log(params);
     const result = await getRequest("/flights", params);
+    console.log("vercel atualizado");
     console.log(result);
     if (result.length <= 0) {
       setNoSearchFound(true);
