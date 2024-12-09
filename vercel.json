@@ -13,7 +13,6 @@
   ],
   "routes": [
     { "src": "/api/flights", "dest": "backend/src/server.js" },
-    { "src": "/api/(.*)", "dest": "backend/src/server.js" },
     { "src": "/(.*)", "dest": "frontend/$1" }
   ]
 }
