@@ -46,7 +46,7 @@ export default function Home() {
 
     // console.log(params);
     const result = await getRequest("/flights", params);
-    // console.log(result);
+    console.log(result);
     if (result.length <= 0) {
       setNoSearchFound(true);
     } else {
@@ -110,8 +110,6 @@ export default function Home() {
           : !flight.FAvailable))
     );
   });
-
-  console.log(flights);
 
   return (
     <>
