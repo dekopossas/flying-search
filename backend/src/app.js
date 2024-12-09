@@ -2,9 +2,9 @@ const express = require("express");
 const { errorMiddleware } = require("./middlewares/error");
 const cors = require("cors");
 const helmet = require("helmet");
-const testRoute = require("./test");
 
 const { flightsRoute } = require("./routes");
+const { testRoute } = require("./routes");
 
 const app = express();
 
