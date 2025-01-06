@@ -42,6 +42,7 @@ export default function Home() {
       take: 5, // aqui que limita o numero de passagens por pesquisa
       op_carriers: "QR",
       min_seats: numPassengers || 1,
+      show_individual: true,
     };
 
     // console.log(params);
