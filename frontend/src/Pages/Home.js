@@ -39,24 +39,34 @@ export default function Home() {
       destination_airport: destinyAirport !== "" ? destinyAirport : null,
       start_date: startDate !== "" ? startDate : null,
       end_date: endDate !== "" ? endDate : null,
-      take: 5, // aqui que limita o numero de passagens por pesquisa
+      take: 5,
       op_carriers: "QR",
       min_seats: numPassengers || 1,
       show_individual: true,
     };
 
-    // console.log(params);
-    const result = await getRequest("/flights", params);
-    console.log("vercel atualizado 2");
-    console.log(result);
-    if (result.length <= 0) {
-      setNoSearchFound(true);
-    } else {
-      setNoSearchFound(false);
+    try {
+      const result = await getRequest("/flights", params);
+      console.log("vercel atualizado 2");
+      console.log(result);
+
+      if (!Array.isArray(result)) {
+        throw new Error("O retorno da API não é um array");
+      }
+
+      if (result.length <= 0) {
+        setNoSearchFound(true);
+      } else {
+        setNoSearchFound(false);
+      }
+      setFlights(result);
+    } catch (error) {
+      console.error("Erro ao buscar voos:", error);
+      setFlights([]); // Reseta para array vazio em caso de erro
+    } finally {
+      setShowNoFilled(false);
+      setIsLoading(false);
     }
-    setFlights(result);
-    setShowNoFilled(false);
-    setIsLoading(false);
   };
 
   const handleErrors = () => {
@@ -81,7 +91,7 @@ export default function Home() {
     setFilters((prev) => ({ ...prev, [column]: value }));
   };
 
-  const filteredFlights = flights.filter((flight) => {
+  const filteredFlights = flights?.filter((flight) => {
     return (
       (!filters.Date || flight.Date.includes(filters.Date)) &&
       (!filters.Source ||
