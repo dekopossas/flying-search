@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001", // URL de produção ou localhost
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001/", // URL de produção ou localhost
 });
 
 export const getRequest = async (url, params) => {
