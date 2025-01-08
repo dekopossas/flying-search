@@ -48,7 +48,7 @@ export default function Home() {
     console.log(params);
 
     try {
-      const result = await getRequest("/", params);
+      const result = await getRequest("/flights", params);
       console.log("vercel atualizado 2");
       console.log(result);
 
